@@ -6,13 +6,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.3.RELEASE</version>
-        <relativePath/>
-    </parent>
-
     <groupId>com.reljicd</groupId>
     <artifactId>shopping-cart</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -21,35 +14,38 @@
     <name>shopping-cart</name>
     <description>Demo project for Spring Boot Shopping Cart</description>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.3.RELEASE</version>
+        <relativePath/>
+    </parent>
+
     <properties>
 
-        <!-- Java -->
-        <java.version>17</java.version>
-
-        <!-- Encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- JaCoCo -->
-        <jacoco.version>0.8.8</jacoco.version>
+        <java.version>1.8</java.version>
 
-        <!-- SonarQube -->
+        <jacoco.version>0.8.6</jacoco.version>
+
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
+        <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
         <sonar.language>java</sonar.language>
 
     </properties>
 
     <dependencies>
 
-        <!-- Spring Data JPA -->
+        <!-- Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Spring Data REST -->
+        <!-- Data REST -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
@@ -85,7 +81,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- DevTools -->
+        <!-- Spring Boot DevTools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -120,25 +116,18 @@
             <version>3.3.7</version>
         </dependency>
 
+        <!-- JaCoCo -->
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.6</version>
+        </dependency>
+
         <!-- jQuery -->
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>
             <version>2.1.4</version>
-        </dependency>
-
-        <!-- JAXB API - required by old Spring/Hibernate on Java 17 -->
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-
-        <!-- JAXB Runtime -->
-        <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.8</version>
         </dependency>
 
     </dependencies>
@@ -147,7 +136,7 @@
 
         <plugins>
 
-            <!-- Spring Boot -->
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -188,22 +177,22 @@
                     </execution>
 
                 </executions>
-
             </plugin>
 
         </plugins>
 
     </build>
 
-    <!-- Nexus Repository -->
     <distributionManagement>
 
+        <!-- Nexus Releases -->
         <repository>
             <id>maven-releases</id>
             <name>maven-releases</name>
             <url>http://65.1.136.231:8081/repository/maven-releases/</url>
         </repository>
 
+        <!-- Nexus Snapshots -->
         <snapshotRepository>
             <id>maven-snapshots</id>
             <name>maven-snapshots</name>
