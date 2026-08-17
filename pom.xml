@@ -136,7 +136,7 @@
 
         <plugins>
 
-            <!-- Spring Boot Maven Plugin -->
+            <!-- Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -185,18 +185,20 @@
 
     <distributionManagement>
 
-        <!-- Nexus Releases -->
         <repository>
             <id>maven-releases</id>
             <name>maven-releases</name>
-            <url>http://65.1.136.231:8081/repository/maven-releases/</url>
+            <url>
+                http://65.1.136.231:8081/repository/maven-releases/
+            </url>
         </repository>
 
-        <!-- Nexus Snapshots -->
         <snapshotRepository>
             <id>maven-snapshots</id>
             <name>maven-snapshots</name>
-            <url>http://65.1.136.231:8081/repository/maven-snapshots/</url>
+            <url>
+                http://65.1.136.231:8081/repository/maven-snapshots/
+            </url>
         </snapshotRepository>
 
     </distributionManagement>

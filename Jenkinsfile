@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
+        NVD_API_KEY = credentials('nvd-api-key')
     }
 
     tools {
@@ -12,34 +13,32 @@ pipeline {
 
     stages {
 
-        stage('Git Checkout') {
+        stage('git checkout') {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/ajayM1988/Ekart_project.git'
             }
         }
 
-        stage('Compile') {
+        stage('compile') {
             steps {
-                sh 'mvn compile'
+                sh "mvn compile"
             }
         }
 
-        stage('Unit Tests') {
+        stage('unit tests') {
             steps {
-                sh 'mvn test -DskipTests=true'
+                sh "mvn test -DskipTests=true"
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('SonarQube analysis') {
             steps {
                 withSonarQubeEnv('sonar-scanner') {
-                    sh """
-                        ${env.SCANNER_HOME}/bin/sonar-scanner \
+                    sh "${env.SCANNER_HOME}/bin/sonar-scanner \
                         -Dsonar.projectKey=EKART \
                         -Dsonar.projectName=EKART \
-                        -Dsonar.java.binaries=target/classes
-                    """
+                        -Dsonar.java.binaries=target/classes"
                 }
             }
         }
@@ -53,7 +52,7 @@ pipeline {
                     )
                 ]) {
                     dependencyCheck(
-                        additionalArguments: "--scan . --format HTML --format XML --nvdApiKey=$NVD_API_KEY",
+                        additionalArguments: "--nvdApiKey=$NVD_API_KEY",
                         odcInstallation: 'DC'
                     )
                 }
@@ -62,11 +61,11 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn package -DskipTests=true'
+                sh "mvn package -DskipTests=true"
             }
         }
 
-        stage('Deploy to Nexus') {
+        stage('deploy to Nexus') {
             steps {
                 withMaven(
                     globalMavenSettingsConfig: 'global-maven',
@@ -75,49 +74,53 @@ pipeline {
                     mavenSettingsConfig: '',
                     traceability: true
                 ) {
-                    sh 'mvn deploy -DskipTests=true'
+                    sh "mvn deploy -DskipTests=true"
                 }
             }
         }
 
-        stage('Build and Tag Docker Image') {
+        stage('build and Tag docker image') {
             steps {
-                sh 'docker build -t ajay1988/ekart:latest -f docker/Dockerfile .'
+                script {
+                    sh "docker build -t ajay1988/ekart:latest -f docker/Dockerfile ."
+                }
             }
         }
 
-        stage('Push Image to Docker Hub') {
+        stage('Push image to Hub') {
             steps {
-                withCredentials([
-                    string(
-                        credentialsId: 'dockerhub-pwd',
-                        variable: 'DOCKERHUB_PASSWORD'
-                    )
-                ]) {
-                    sh '''
-                        echo "$DOCKERHUB_PASSWORD" | docker login \
+                script {
+                    withCredentials([
+                        string(
+                            credentialsId: 'dockerhub-pwd',
+                            variable: 'dockerhubpwd'
+                        )
+                    ]) {
+                        sh '''
+                            echo "$dockerhubpwd" | docker login \
                             -u ajay1988 \
                             --password-stdin
+                        '''
+                    }
 
-                        docker push ajay1988/ekart:latest
-                    '''
+                    sh "docker push ajay1988/ekart:latest"
                 }
             }
         }
 
-        stage('EKS and Kubectl Configuration') {
+        stage('EKS and Kubectl configuration') {
             steps {
-                sh '''
-                    aws eks update-kubeconfig \
-                    --region ap-south-1 \
-                    --name project-cluster
-                '''
+                script {
+                    sh 'aws eks update-kubeconfig --region ap-south-1 --name project-cluster'
+                }
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Deploy to k8s') {
             steps {
-                sh 'kubectl apply -f deploymentservice.yml'
+                script {
+                    sh 'kubectl apply -f deploymentservice.yml'
+                }
             }
         }
     }
