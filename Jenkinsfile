@@ -14,13 +14,27 @@ pipeline {
 
         stage('Git Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/ajayM1988/Ekart_project.git'
+                git branch: 'main',
+                    url: 'https://github.com/ajayM1988/Ekart_project.git'
+            }
+        }
+
+        stage('Verify Java and Maven') {
+            steps {
+                sh '''
+                    echo "JAVA_HOME=$JAVA_HOME"
+                    echo "Java Version:"
+                    java -version
+
+                    echo "Maven Version:"
+                    mvn -version
+                '''
             }
         }
 
         stage('Compile') {
             steps {
-                sh 'mvn compile'
+                sh 'mvn clean compile'
             }
         }
 
@@ -94,7 +108,10 @@ pipeline {
                     )
                 ]) {
                     sh '''
-                        echo "$dockerhubpwd" | docker login -u ajay1988 --password-stdin
+                        echo "$dockerhubpwd" | docker login \
+                            -u ajay1988 \
+                            --password-stdin
+
                         docker push ajay1988/ekart:latest
                     '''
                 }
@@ -103,7 +120,11 @@ pipeline {
 
         stage('EKS and Kubectl Configuration') {
             steps {
-                sh 'aws eks update-kubeconfig --region ap-south-1 --name project-cluster'
+                sh '''
+                    aws eks update-kubeconfig \
+                    --region ap-south-1 \
+                    --name project-cluster
+                '''
             }
         }
 

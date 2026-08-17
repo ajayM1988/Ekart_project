@@ -6,6 +6,13 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.3.RELEASE</version>
+        <relativePath/>
+    </parent>
+
     <groupId>com.reljicd</groupId>
     <artifactId>shopping-cart</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -14,44 +21,35 @@
     <name>shopping-cart</name>
     <description>Demo project for Spring Boot Shopping Cart</description>
 
-    <!-- Spring Boot -->
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.3.RELEASE</version>
-        <relativePath/>
-    </parent>
-
-    <!-- Properties -->
     <properties>
 
+        <!-- Java -->
+        <java.version>17</java.version>
+
+        <!-- Encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- Java 8 -->
-        <java.version>1.8</java.version>
-
         <!-- JaCoCo -->
-        <jacoco.version>0.8.6</jacoco.version>
+        <jacoco.version>0.8.8</jacoco.version>
 
         <!-- SonarQube -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+        <sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
         <sonar.language>java</sonar.language>
 
     </properties>
 
-    <!-- Dependencies -->
     <dependencies>
 
-        <!-- Data JPA -->
+        <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Data REST -->
+        <!-- Spring Data REST -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
@@ -87,14 +85,14 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Boot DevTools -->
+        <!-- DevTools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- H2 Database -->
+        <!-- H2 -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -129,14 +127,27 @@
             <version>2.1.4</version>
         </dependency>
 
+        <!-- JAXB API - required by old Spring/Hibernate on Java 17 -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
+        <!-- JAXB Runtime -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.8</version>
+        </dependency>
+
     </dependencies>
 
-    <!-- Build -->
     <build>
 
         <plugins>
 
-            <!-- Spring Boot Maven Plugin -->
+            <!-- Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -161,7 +172,6 @@
 
                 <executions>
 
-                    <!-- Prepare JaCoCo Agent -->
                     <execution>
                         <id>jacoco-initialize</id>
                         <goals>
@@ -169,7 +179,6 @@
                         </goals>
                     </execution>
 
-                    <!-- Generate JaCoCo Report -->
                     <execution>
                         <id>jacoco-site</id>
                         <phase>package</phase>
@@ -189,14 +198,12 @@
     <!-- Nexus Repository -->
     <distributionManagement>
 
-        <!-- Release Repository -->
         <repository>
             <id>maven-releases</id>
             <name>maven-releases</name>
             <url>http://65.1.136.231:8081/repository/maven-releases/</url>
         </repository>
 
-        <!-- Snapshot Repository -->
         <snapshotRepository>
             <id>maven-snapshots</id>
             <name>maven-snapshots</name>
