@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
-        NVD_API_KEY = credentials('nvd-api-key')
     }
 
     tools {
@@ -22,23 +21,25 @@ pipeline {
 
         stage('compile') {
             steps {
-                sh "mvn compile"
+                sh 'mvn compile'
             }
         }
 
         stage('unit tests') {
             steps {
-                sh "mvn test -DskipTests=true"
+                sh 'mvn test -DskipTests=true'
             }
         }
 
         stage('SonarQube analysis') {
             steps {
                 withSonarQubeEnv('sonar-scanner') {
-                    sh "${env.SCANNER_HOME}/bin/sonar-scanner \
+                    sh """
+                        ${env.SCANNER_HOME}/bin/sonar-scanner \
                         -Dsonar.projectKey=EKART \
                         -Dsonar.projectName=EKART \
-                        -Dsonar.java.binaries=target/classes"
+                        -Dsonar.java.binaries=target/classes
+                    """
                 }
             }
         }
@@ -61,66 +62,56 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "mvn package -DskipTests=true"
+                sh 'mvn package -DskipTests=true'
             }
         }
 
         stage('deploy to Nexus') {
             steps {
                 withMaven(
-                    globalMavenSettingsConfig: 'global-maven',
                     jdk: 'jdk-17',
                     maven: 'maven3',
-                    mavenSettingsConfig: '',
                     traceability: true
                 ) {
-                    sh "mvn deploy -DskipTests=true"
+                    sh 'mvn deploy -DskipTests=true'
                 }
             }
         }
 
         stage('build and Tag docker image') {
             steps {
-                script {
-                    sh "docker build -t ajay1988/ekart:latest -f docker/Dockerfile ."
-                }
+                sh 'docker build -t ajay1988/ekart:latest -f docker/Dockerfile .'
             }
         }
 
         stage('Push image to Hub') {
             steps {
-                script {
-                    withCredentials([
-                        string(
-                            credentialsId: 'dockerhub-pwd',
-                            variable: 'dockerhubpwd'
-                        )
-                    ]) {
-                        sh '''
-                            echo "$dockerhubpwd" | docker login \
-                            -u ajay1988 \
-                            --password-stdin
-                        '''
-                    }
+                withCredentials([
+                    string(
+                        credentialsId: 'dockerhub-pwd',
+                        variable: 'dockerhubpwd'
+                    )
+                ]) {
+                    sh '''
+                        echo "$dockerhubpwd" | docker login \
+                        -u ajay1988 \
+                        --password-stdin
 
-                    sh "docker push ajay1988/ekart:latest"
+                        docker push ajay1988/ekart:latest
+                    '''
                 }
             }
         }
 
         stage('EKS and Kubectl configuration') {
             steps {
-                script {
-                    sh 'aws eks update-kubeconfig --region ap-south-1 --name project-cluster'
-                }
+                sh 'aws eks update-kubeconfig --region ap-south-1 --name project-cluster'
             }
         }
 
         stage('Deploy to k8s') {
             steps {
-                script {
-                    sh 'kubectl apply -f deploymentservice.yml'
-                }
+                sh 'kubectl apply -f deploymentservice.yml'
             }
         }
     }
