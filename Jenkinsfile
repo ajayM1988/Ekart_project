@@ -46,10 +46,17 @@ pipeline {
 
         stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck(
-                    additionalArguments: '--scan . --format HTML --format XML',
-                    odcInstallation: 'DC'
-                )
+                withCredentials([
+                    string(
+                        credentialsId: 'nvd-api-key',
+                        variable: 'NVD_API_KEY'
+                    )
+                ]) {
+                    dependencyCheck(
+                        additionalArguments: "--scan . --format HTML --format XML --nvdApiKey=$NVD_API_KEY",
+                        odcInstallation: 'DC'
+                    )
+                }
             }
         }
 
@@ -100,7 +107,11 @@ pipeline {
 
         stage('EKS and Kubectl Configuration') {
             steps {
-                sh 'aws eks update-kubeconfig --region ap-south-1 --name project-cluster'
+                sh '''
+                    aws eks update-kubeconfig \
+                    --region ap-south-1 \
+                    --name project-cluster
+                '''
             }
         }
 
