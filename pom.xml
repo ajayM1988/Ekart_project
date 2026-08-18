@@ -14,6 +14,10 @@
     <name>shopping-cart</name>
     <description>Demo project for Spring Boot Shopping Cart</description>
 
+    <!-- ====================================================== -->
+    <!-- Spring Boot                                             -->
+    <!-- ====================================================== -->
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -21,21 +25,32 @@
         <relativePath/>
     </parent>
 
+    <!-- ====================================================== -->
+    <!-- Properties                                              -->
+    <!-- ====================================================== -->
+
     <properties>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- Jenkins is using JDK 17 -->
         <java.version>17</java.version>
 
-        <!-- Updated for Java 17 -->
+        <!-- Existing JaCoCo version - unchanged -->
         <jacoco.version>0.8.11</jacoco.version>
 
+        <!-- SonarQube -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
         <sonar.language>java</sonar.language>
+
     </properties>
+
+    <!-- ====================================================== -->
+    <!-- Dependencies                                            -->
+    <!-- ====================================================== -->
 
     <dependencies>
 
@@ -132,26 +147,68 @@
 
     </dependencies>
 
+    <!-- ====================================================== -->
+    <!-- Build                                                    -->
+    <!-- ====================================================== -->
+
     <build>
+
         <plugins>
 
-            <!-- Spring Boot -->
+            <!-- ================================================= -->
+            <!-- Spring Boot Maven Plugin                          -->
+            <!-- ================================================= -->
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- OWASP Dependency Check -->
+            <!-- ================================================= -->
+            <!-- Maven Surefire                                     -->
+            <!-- ================================================= -->
+            <!--
+                No version specified here.
+                Therefore, no existing Maven/Spring version is changed.
+
+                Spring Boot 1.5.3 uses old Spring/CGLIB components.
+                Java 17 blocks reflective access to java.lang.
+
+                This opens java.lang to unnamed modules during tests.
+            -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+
+                <configuration>
+                    <argLine>
+                        @{argLine}
+                        --add-opens=java.base/java.lang=ALL-UNNAMED
+                    </argLine>
+                </configuration>
+
+            </plugin>
+
+            <!-- ================================================= -->
+            <!-- OWASP Dependency Check                             -->
+            <!-- ================================================= -->
+
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>8.4.0</version>
+
                 <configuration>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                 </configuration>
+
             </plugin>
 
-            <!-- JaCoCo -->
+            <!-- ================================================= -->
+            <!-- JaCoCo                                              -->
+            <!-- ================================================= -->
+
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -159,35 +216,48 @@
 
                 <executions>
 
+                    <!-- Prepare JaCoCo agent -->
                     <execution>
                         <id>jacoco-initialize</id>
+
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
 
+                    <!-- Generate JaCoCo report -->
                     <execution>
                         <id>jacoco-site</id>
+
                         <phase>package</phase>
+
                         <goals>
                             <goal>report</goal>
                         </goals>
                     </execution>
 
                 </executions>
+
             </plugin>
 
         </plugins>
+
     </build>
+
+    <!-- ====================================================== -->
+    <!-- Nexus Distribution Management                           -->
+    <!-- ====================================================== -->
 
     <distributionManagement>
 
+        <!-- Release repository -->
         <repository>
             <id>maven-releases</id>
             <name>maven-releases</name>
             <url>http://13.232.212.246:8081/repository/maven-releases/</url>
         </repository>
 
+        <!-- Snapshot repository -->
         <snapshotRepository>
             <id>maven-snapshots</id>
             <name>maven-snapshots</name>
