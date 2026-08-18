@@ -6,14 +6,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.reljicd</groupId>
-    <artifactId>shopping-cart</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
-
-    <name>shopping-cart</name>
-    <description>Demo project for Spring Boot Shopping Cart</description>
-
     <!-- Spring Boot -->
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -21,6 +13,14 @@
         <version>1.5.3.RELEASE</version>
         <relativePath/>
     </parent>
+
+    <groupId>com.reljicd</groupId>
+    <artifactId>shopping-cart</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>shopping-cart</name>
+    <description>Demo project for Spring Boot Shopping Cart</description>
 
     <!-- Properties -->
     <properties>
@@ -31,7 +31,7 @@
         <!-- Jenkins is using JDK 17 -->
         <java.version>17</java.version>
 
-        <!-- Existing JaCoCo version - unchanged -->
+        <!-- JaCoCo compatible with Java 17 -->
         <jacoco.version>0.8.11</jacoco.version>
 
         <!-- SonarQube -->
@@ -150,13 +150,6 @@
             </plugin>
 
             <!-- Maven Surefire -->
-            <!--
-                No version is specified here.
-                This preserves your existing version management.
-
-                The --add-opens option is for Java 17 compatibility
-                with the old Spring/CGLIB stack.
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -173,7 +166,6 @@
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>8.4.0</version>
-
                 <configuration>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                 </configuration>
