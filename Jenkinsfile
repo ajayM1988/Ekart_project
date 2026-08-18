@@ -64,23 +64,23 @@ pipeline {
         }
         stage('build and Tag docker image') {
             steps {
-                sh 'docker build -t ajay1988/ekart:latest -f docker/Dockerfile .'
+                sh 'docker build -t ajay676/ekart:latest -f docker/Dockerfile .'
             }
         }
         stage('Push image to Hub') {
-    steps {
-        withCredentials([
-            string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')
-        ]) {
-            sh '''
-                echo "$dockerhubpwd" | docker login \
-                -u ajay676 \
-                --password-stdin
-                docker push ajay676/ekart:latest
-            '''
+            steps {
+                withCredentials([
+                    string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')
+                ]) {
+                    sh '''
+                        echo "$dockerhubpwd" | docker login \
+                        -u ajay676 \
+                        --password-stdin
+                        docker push ajay676/ekart:latest
+                    '''
+                }
+            }
         }
-    }
-}
         stage('EKS and Kubectl configuration') {
             steps {
                 sh 'aws eks update-kubeconfig --region ap-south-1 --name project-cluster'
