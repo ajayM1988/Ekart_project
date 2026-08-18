@@ -68,19 +68,19 @@ pipeline {
             }
         }
         stage('Push image to Hub') {
-            steps {
-                withCredentials([
-                    string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')
-                ]) {
-                    sh '''
-                        echo "$dockerhubpwd" | docker login \
-                        -u ajay1988 \
-                        --password-stdin
-                        docker push ajay1988/ekart:latest
-                    '''
-                }
-            }
+    steps {
+        withCredentials([
+            string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')
+        ]) {
+            sh '''
+                echo "$dockerhubpwd" | docker login \
+                -u ajay676 \
+                --password-stdin
+                docker push ajay676/ekart:latest
+            '''
         }
+    }
+}
         stage('EKS and Kubectl configuration') {
             steps {
                 sh 'aws eks update-kubeconfig --region ap-south-1 --name project-cluster'
