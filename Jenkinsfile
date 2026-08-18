@@ -27,7 +27,7 @@ pipeline {
 
         stage('unit tests') {
             steps {
-                sh 'mvn test -DskipTests=true'
+                sh 'mvn test'
             }
         }
 
@@ -45,20 +45,19 @@ pipeline {
         }
 
         stage('OWASP Dependency Check') {
-    steps {
-        withCredentials([
-            string(
-                credentialsId: 'nvd-api-key',
-                variable: 'NVD_API_KEY'
-            )
-        ]) {
-            sh '''
-                mvn org.owasp:dependency-check-maven:8.4.0:check
-            '''
+            steps {
+                withCredentials([
+                    string(
+                        credentialsId: 'nvd-api-key',
+                        variable: 'NVD_API_KEY'
+                    )
+                ]) {
+                    sh '''
+                        mvn org.owasp:dependency-check-maven:8.4.0:check
+                    '''
+                }
+            }
         }
-    }
-}
-}
 
         stage('Build') {
             steps {
@@ -67,17 +66,17 @@ pipeline {
         }
 
         stage('deploy to Nexus') {
-    steps {
-        withMaven(
-            globalMavenSettingsConfig: 'global-maven',
-            jdk: 'jdk-17',
-            maven: 'maven3',
-            traceability: true
-        ) {
-            sh 'mvn deploy -DskipTests=true'
+            steps {
+                withMaven(
+                    globalMavenSettingsConfig: 'global-maven',
+                    jdk: 'jdk-17',
+                    maven: 'maven3',
+                    traceability: true
+                ) {
+                    sh 'mvn deploy -DskipTests=true'
+                }
+            }
         }
-    }
-}
 
         stage('build and Tag docker image') {
             steps {
