@@ -45,17 +45,17 @@ pipeline {
         }
 
         stage('OWASP Dependency Check') {
-            steps {
-                withCredentials([
-                    string(
-                        credentialsId: 'nvd-api-key',
-                        variable: 'NVD_API_KEY'
-                    )
-                ]) {
-                    sh 'mvn org.owasp:dependency-check-maven:8.4.0:check'
-                }
-            }
+    steps {
+        withCredentials([
+            string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')
+        ]) {
+            sh '''
+                mvn org.owasp:dependency-check-maven:8.4.0:check \
+                -DnvdApiKey=$NVD_API_KEY
+            '''
         }
+    }
+}
 
         stage('Build') {
             steps {
