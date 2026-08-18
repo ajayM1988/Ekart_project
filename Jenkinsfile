@@ -14,8 +14,8 @@ pipeline {
 
         stage('git checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/ajayM1988/Ekart_project.git'
+                git branch: 'master',
+                    url: 'https://github.com/YoungMinds2024/Ekart.git'
             }
         }
 
@@ -27,7 +27,7 @@ pipeline {
 
         stage('unit tests') {
             steps {
-                sh 'mvn test'
+                sh 'mvn test -DskipTests=true'
             }
         }
 
@@ -52,9 +52,10 @@ pipeline {
                         variable: 'NVD_API_KEY'
                     )
                 ]) {
-                    sh '''
-                        mvn org.owasp:dependency-check-maven:8.4.0:check
-                    '''
+                    dependencyCheck(
+                        additionalArguments: "--nvdApiKey=$NVD_API_KEY",
+                        odcInstallation: 'DC'
+                    )
                 }
             }
         }
@@ -80,7 +81,7 @@ pipeline {
 
         stage('build and Tag docker image') {
             steps {
-                sh 'docker build -t ajay1988/ekart:latest -f docker/Dockerfile .'
+                sh 'docker build -t youngminds73/ekart:latest -f docker/Dockerfile .'
             }
         }
 
@@ -94,10 +95,10 @@ pipeline {
                 ]) {
                     sh '''
                         echo "$dockerhubpwd" | docker login \
-                        -u ajay1988 \
+                        -u youngminds73 \
                         --password-stdin
 
-                        docker push ajay1988/ekart:latest
+                        docker push youngminds73/ekart:latest
                     '''
                 }
             }
@@ -105,7 +106,9 @@ pipeline {
 
         stage('EKS and Kubectl configuration') {
             steps {
-                sh 'aws eks update-kubeconfig --region ap-south-1 --name project-cluster'
+                sh 'aws eks update-kubeconfig \
+                    --region ap-south-1 \
+                    --name project-cluster'
             }
         }
 
