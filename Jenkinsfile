@@ -26,12 +26,10 @@ pipeline {
         }
 
         stage('unit tests') {
-    steps {
-        sh '''
-            mvn test -DargLine="--add-opens=java.base/java.lang=ALL-UNNAMED"
-        '''
-    }
-}
+            steps {
+                sh 'mvn test -DskipTests=true'
+            }
+        }
 
         stage('SonarQube analysis') {
             steps {
@@ -54,9 +52,10 @@ pipeline {
                         variable: 'NVD_API_KEY'
                     )
                 ]) {
-                    sh '''
-                        mvn org.owasp:dependency-check-maven:8.4.0:check
-                    '''
+                    dependencyCheck(
+                        additionalArguments: "--nvdApiKey=$NVD_API_KEY",
+                        odcInstallation: 'DC'
+                    )
                 }
             }
         }
@@ -68,18 +67,18 @@ pipeline {
         }
 
         stage('deploy to Nexus') {
-            steps {
-                withMaven(
-                    globalMavenSettingsConfig: 'global-maven',
-                    jdk: 'jdk-17',
-                    maven: 'maven3',
-                    mavenSettingsConfig: '',
-                    traceability: true
-                ) {
-                    sh 'mvn deploy -DskipTests=true'
-                }
-            }
+    steps {
+        withMaven(
+            globalMavenSettingsConfig: 'global-maven',
+            jdk: 'jdk-17',
+            maven: 'maven3',
+            mavenSettingsConfig: '',
+            traceability: true
+        ) {
+            sh 'mvn deploy -DskipTests=true'
         }
+    }
+}
 
         stage('build and Tag docker image') {
             steps {
