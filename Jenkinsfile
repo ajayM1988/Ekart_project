@@ -15,7 +15,7 @@ pipeline {
         stage('git checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/YoungMinds2024/Ekart.git'
+                    url: 'https://github.com/ajayM1988/Ekart_project.git'
             }
         }
 
@@ -27,7 +27,7 @@ pipeline {
 
         stage('unit tests') {
             steps {
-                sh 'mvn test -DskipTests=true'
+                sh 'mvn test'
             }
         }
 
@@ -52,10 +52,9 @@ pipeline {
                         variable: 'NVD_API_KEY'
                     )
                 ]) {
-                    dependencyCheck(
-                        additionalArguments: "--nvdApiKey=$NVD_API_KEY",
-                        odcInstallation: 'DC'
-                    )
+                    sh '''
+                        mvn org.owasp:dependency-check-maven:8.4.0:check
+                    '''
                 }
             }
         }
@@ -72,6 +71,7 @@ pipeline {
                     globalMavenSettingsConfig: 'global-maven',
                     jdk: 'jdk-17',
                     maven: 'maven3',
+                    mavenSettingsConfig: '',
                     traceability: true
                 ) {
                     sh 'mvn deploy -DskipTests=true'
@@ -81,7 +81,7 @@ pipeline {
 
         stage('build and Tag docker image') {
             steps {
-                sh 'docker build -t youngminds73/ekart:latest -f docker/Dockerfile .'
+                sh 'docker build -t ajay1988/ekart:latest -f docker/Dockerfile .'
             }
         }
 
@@ -95,10 +95,10 @@ pipeline {
                 ]) {
                     sh '''
                         echo "$dockerhubpwd" | docker login \
-                        -u youngminds73 \
+                        -u ajay1988 \
                         --password-stdin
 
-                        docker push youngminds73/ekart:latest
+                        docker push ajay1988/ekart:latest
                     '''
                 }
             }
@@ -106,9 +106,7 @@ pipeline {
 
         stage('EKS and Kubectl configuration') {
             steps {
-                sh 'aws eks update-kubeconfig \
-                    --region ap-south-1 \
-                    --name project-cluster'
+                sh 'aws eks update-kubeconfig --region ap-south-1 --name project-cluster'
             }
         }
 
