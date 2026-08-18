@@ -6,14 +6,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Spring Boot -->
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.3.RELEASE</version>
-        <relativePath/>
-    </parent>
-
     <groupId>com.reljicd</groupId>
     <artifactId>shopping-cart</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -22,19 +14,22 @@
     <name>shopping-cart</name>
     <description>Demo project for Spring Boot Shopping Cart</description>
 
-    <!-- Properties -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.3.RELEASE</version>
+        <relativePath/>
+    </parent>
+
     <properties>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- Jenkins is using JDK 17 -->
         <java.version>17</java.version>
 
-        <!-- JaCoCo compatible with Java 17 -->
         <jacoco.version>0.8.11</jacoco.version>
 
-        <!-- SonarQube -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
@@ -42,7 +37,6 @@
 
     </properties>
 
-    <!-- Dependencies -->
     <dependencies>
 
         <!-- Data JPA -->
@@ -138,7 +132,6 @@
 
     </dependencies>
 
-    <!-- Build -->
     <build>
 
         <plugins>
@@ -147,18 +140,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
-            <!-- Maven Surefire -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <argLine>
-                        @{argLine}
-                        --add-opens=java.base/java.lang=ALL-UNNAMED
-                    </argLine>
-                </configuration>
             </plugin>
 
             <!-- OWASP Dependency Check -->
@@ -201,7 +182,6 @@
 
     </build>
 
-    <!-- Nexus -->
     <distributionManagement>
 
         <repository>
