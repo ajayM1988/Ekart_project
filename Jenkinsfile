@@ -21,10 +21,10 @@ pipeline {
             }
         }
         stage('unit tests') {
-            steps {
-                sh 'mvn test -DskipTests=true'
-            }
-        }
+    steps {
+        sh 'mvn test'
+    }
+}
         stage('SonarQube analysis') {
             steps {
                 withSonarQubeEnv('sonar-scanner') {
