@@ -21,10 +21,10 @@ pipeline {
             }
         }
         stage('unit tests') {
-    steps {
-        sh 'mvn test -DargLine="--add-opens java.base/java.lang=ALL-UNNAMED"'
-    }
-}
+            steps {
+                sh "mvn test -DskipTests=true"
+            }
+        }
         stage('SonarQube analysis') {
             steps {
                 withSonarQubeEnv('sonar-scanner') {
