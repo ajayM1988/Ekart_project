@@ -22,7 +22,7 @@ pipeline {
         }
         stage('unit tests') {
     steps {
-        sh 'mvn test'
+        sh 'mvn test -DargLine="--add-opens java.base/java.lang=ALL-UNNAMED"'
     }
 }
         stage('SonarQube analysis') {
